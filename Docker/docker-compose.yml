@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  database:
+    container_name: database
+    image: btvperseo/bd:v13
+    env_file:
+      - docker.env
+    expose:
+      - '3306' 
+    networks:
+      - backend_network
+  componente:
+    container_name: componente
+    image: btvperseo/componente:v9
+    expose:
+      - '80'  
+      - '1883'  
+    env_file:
+      - docker.env
+    depends_on:
+      - 'database'
+    networks:
+      - backend_network
+  apiperseo:
+    container_name: apiperseo
+    image: btvperseo/api:v23
+    ports:
+     - '61549:80'
+    expose:
+     - '80'
+    env_file:
+      - docker.env
+    depends_on:
+      - 'database'
+      - 'componente'
+    command:
+        wait-for-it.bs
+    networks:
+      - backend_network
+  frontperseo:
+    container_name: frontperseo
+    image: btvperseo/front:v22
+    ports:
+     - '4200:8282'  
+    expose:
+     - '8282' 
+    env_file:
+      - docker.env
+    depends_on:
+      - 'apiperseo'
+    networks:
+      - frontend_network
+      - backend_network
+networks:
+  backend_network:
+    driver: bridge
+  frontend_network:
+    driver: bridge
+

@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+# Variables de entorno o argumentos
+host="$database"
+shift
+user="$root"
+shift
+password="$password"
+shift
+database="$perseo"
+shift
+cmd="$@"
+
+# Espera a que MySQL esté listo
+until mysql -h"$host" -P"3306" -u"$user" -p"$password" -D"$database" -e "SELECT 1 FROM perseo.sw_user_app where login= 'superAdmin';"; do
+  >&2 echo "MySQL is unavailable - sleeping"
+  sleep  1
+done
+
+>&2 echo "MySQL is up - executing command"
+exec $cmd

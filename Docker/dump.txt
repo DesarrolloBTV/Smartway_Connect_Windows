@@ -1,0 +1,1 @@
+sudo docker exec -i database mysql -P 3306 -u root -p password < Dump20240507.sql

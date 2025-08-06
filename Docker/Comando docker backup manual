@@ -1,0 +1,1 @@
+bash docker-database-backup.sh database root password perseo ./

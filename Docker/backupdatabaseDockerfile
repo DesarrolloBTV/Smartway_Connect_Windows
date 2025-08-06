@@ -1,0 +1,15 @@
+FROM alpine:latest
+
+COPY ./backup-database /etc/periodic/15min
+
+RUN apk update && \
+    apk upgrade && \
+    apk add --no-cache mariadb-client && \
+    chmod a+x /etc/periodic/15min/*
+	
+##/etc/periodic/daily/*
+##/etc/periodic/15min/*
+##/etc/periodic/hourly/*
+##/etc/periodic/daily/*
+##/etc/periodic/weekly/*
+##/etc/periodic/monthly/*

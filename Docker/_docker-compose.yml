@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  database:
+    container_name: database
+    image: btvperseo/bd:v4
+    restart: always
+    env_file:
+      - database-env.env
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    #volumes:
+      #- ./Dump20240507.sql:/docker-entrypoint-initdb.d/init.sql
+      # - /etc/localtime:/etc/localtime:ro
+      # - /opt/mysql/data:/var/lib/mysql
+  componente:
+     container_name: componente
+     image: btvperseo/componente:v4
+     ports:
+      - '8090:80'
+      - '1883:1883'
+     expose:
+      - '80'
+      - '1883'
+     env_file:
+      - componente-env.env
+     depends_on:
+      - 'database'
+  apiperseo:
+    container_name: apiperseo
+    image: btvperseo/api:v6
+    ports:
+     - '61549:80'
+    expose:
+     - '80'
+    env_file:
+     - api-env.env
+    depends_on:
+      - 'database'
+      - 'componente'
+    links:
+      - componente
+      - database
+    command:
+        wait-for-it.bs
+  frontperseo:
+    container_name: frontperseo
+    image: btvperseo/front:v6
+    ports:
+     - '4200:8282'
+    expose:
+     - '8282'
+    env_file:
+     - api-env.env
+    depends_on:
+     - 'apiperseo'
+    links:
+     - apiperseo
